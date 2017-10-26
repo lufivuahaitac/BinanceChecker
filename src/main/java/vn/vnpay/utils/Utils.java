@@ -51,7 +51,7 @@ public class Utils {
     }
 
     private Utils() {
-        startPrice =  0.00081000;
+        startPrice =  Config.getC;
         stepPrice = 0.00002;
         stepCheck = 5;
         tray = SystemTray.getSystemTray();
