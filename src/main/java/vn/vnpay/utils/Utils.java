@@ -67,11 +67,11 @@ public class Utils {
         gson = new Gson();
     }
 
-    public void displayTray(String title, String message) {
+    public void displayTray(String title, String message, TrayIcon.MessageType type) {
 
         try {
             tray.add(trayIcon);
-            trayIcon.displayMessage(title, message, TrayIcon.MessageType.WARNING);
+            trayIcon.displayMessage(title, message, type);
             tray.remove(trayIcon);
         } catch (AWTException ex) {
             System.err.println(ex);
@@ -124,7 +124,7 @@ public class Utils {
         long timeChange = stepCheck*Config.getConfig().getLong("PERIOD");
         status += compareWithStartPrice?"so với giá mua: ":"so với " + timeChange + "s trước: ";
         if(stepPrice <= Math.abs(change)){
-            displayTray(status, String.format("%.9f", change));
+            displayTray(status, String.format("%.9f", change), change>0?TrayIcon.MessageType.INFO:TrayIcon.MessageType.ERROR);
         }
         
     }
