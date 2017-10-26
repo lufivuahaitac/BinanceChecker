@@ -7,6 +7,7 @@ package vn.vnpay.caches;
 
 import java.util.Map;
 import vn.vnpay.beans.Bean;
+import vn.vnpay.configs.Config;
 import vn.vnpay.utils.Utils;
 
 /**
@@ -14,7 +15,7 @@ import vn.vnpay.utils.Utils;
  * @author truongnq
  */
 public class PriceCache {
-    private final Map<Integer, Bean> priceHistory = Utils.createLRUMap(60);
+    private final Map<Integer, Bean> priceHistory = Utils.createLRUMap(1000000);
     
      private static final class SingletonHolder {
 

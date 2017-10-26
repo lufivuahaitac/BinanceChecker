@@ -5,6 +5,8 @@
  */
 package vn.vnpay.utils;
 
+import vn.vnpay.configs.Config;
+
 
 /**
  *
@@ -14,7 +16,7 @@ public class SequenceNumber {
 
     public static final int MIN_VALUE = 0;
     public static final int DEFAULT_VALUE = 1;
-    public static final int MAX_VALUE = 100;
+    public static final int MAX_VALUE = 1000000000;
 
     private int value;
 

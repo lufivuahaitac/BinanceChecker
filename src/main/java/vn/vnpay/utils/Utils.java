@@ -22,6 +22,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import vn.vnpay.caches.PriceCache;
+import vn.vnpay.configs.Config;
 
 /**
  *
@@ -39,6 +40,7 @@ public class Utils {
     private final int stepCheck;
     private final double stepPrice;
     private final double startPrice;
+    private double tempPrice;
 
     
     private static final class SingletonHolder {
@@ -51,9 +53,9 @@ public class Utils {
     }
 
     private Utils() {
-        startPrice =  Config.getC;
-        stepPrice = 0.00002;
-        stepCheck = 5;
+        startPrice =  Config.getConfig().getDouble("START_PRICE");
+        stepPrice = Config.getConfig().getDouble("STEP_PRICE");
+        stepCheck = Config.getConfig().getInt("STEP_CHECK");
         tray = SystemTray.getSystemTray();
         image = Toolkit.getDefaultToolkit().createImage("icon.png");
         trayIcon = new TrayIcon(image, "");
@@ -69,7 +71,7 @@ public class Utils {
 
         try {
             tray.add(trayIcon);
-            trayIcon.displayMessage(title, message, TrayIcon.MessageType.INFO);
+            trayIcon.displayMessage(title, message, TrayIcon.MessageType.WARNING);
             tray.remove(trayIcon);
         } catch (AWTException ex) {
             System.err.println(ex);
@@ -90,14 +92,17 @@ public class Utils {
             
             for(Bean b:list){
                 if(symbol.equals(b.getSymbol())){
-                    b.setTimestamp();
                     int current = SequenceNumber.getInstance().next();
                     PriceCache.getInstance().set(current, b);
                     System.out.printf("Hien tai: %.9f\n", b.getPrice());
-                    checkPrice(b.getPrice(), startPrice);
+                    if(b.getPrice() == tempPrice){
+                        return;
+                    }
+                    tempPrice = b.getPrice();
+                    checkPrice(b.getPrice(), startPrice, true);
                     Bean pre = PriceCache.getInstance().get(getPre(current, stepCheck));
                     if(null!=pre){
-                        checkPrice(b.getPrice(), pre.getPrice());
+                        checkPrice(b.getPrice(), pre.getPrice(), false);
                     }
                     
                 }
@@ -108,15 +113,16 @@ public class Utils {
         
     }
     
-    private void checkPrice(double cur, double pre){
-        String status= "";
+    private void checkPrice(double cur, double pre, boolean compareWithStartPrice){
+        String status;
         double change = cur - pre;
         if(change > 0){
-            status = "Tăng";
+            status = "Tăng ";
         } else{
-            status = "Giảm";
+            status = "Giảm ";
         }
-        
+        long timeChange = stepCheck*Config.getConfig().getLong("PERIOD");
+        status += compareWithStartPrice?"so với giá mua: ":"so với " + timeChange + "s trước: ";
         if(stepPrice <= Math.abs(change)){
             displayTray(status, String.format("%.9f", change));
         }

@@ -5,19 +5,25 @@
  */
 package vn.vnpay.binancechecker;
 
-import vn.vnpay.utils.SequenceNumber;
-import vn.vnpay.utils.Utils;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import vn.vnpay.configs.Config;
 
 /**
  *
  * @author truongnq
  */
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
-        while(true){
-            Utils.getInstance().getPrice("LINKETH");
-            Thread.sleep(2000);
-                //System.out.println(SequenceNumber.getInstance().next());
+    public static void main(String[] args) {
+        try {
+            Config.initConfig();
+            ScheduledExecutorService exeService = Executors.newScheduledThreadPool(1);
+            long repeatTime = Config.getConfig().getLong("PERIOD");
+            exeService.scheduleAtFixedRate(new Run(), 0, repeatTime, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            System.err.println(e);
         }
+        
     }
 }
