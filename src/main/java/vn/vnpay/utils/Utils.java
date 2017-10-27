@@ -114,7 +114,7 @@ public class Utils {
     }
     
     private void checkPrice(double cur, double pre, boolean compareWithStartPrice){
-        String status;
+        String status = String.format("Giá hiện tại: %.9f\n", cur);
         double change = cur - pre;
         if(change > 0){
             status = "Tăng ";
